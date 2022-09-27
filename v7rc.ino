@@ -18,28 +18,28 @@ BLEAdvertData scndata;
 #include <AmebaServo.h>
 
 #define FRONT_SERVO_PIN PA13
-#define FRONT_SERVO_MIN 1000
-#define FRONT_SERVO_MAX 1500
-#define FRONT_SERVO_CENTER 1200
-#define FRONT_SERVO_DEADZONE 100
+#define FRONT_SERVO_MIN 1200
+#define FRONT_SERVO_MAX 1800
+#define FRONT_SERVO_CENTER 1500
+#define FRONT_SERVO_DEADZONE 50
 
 #define REAR_SERVO_PIN PA12
-#define REAR_SERVO_MIN 1500
-#define REAR_SERVO_MAX 2000
-#define REAR_SERVO_CENTER 1700
-#define REAR_SERVO_DEADZONE 100
+#define REAR_SERVO_MIN 1200
+#define REAR_SERVO_MAX 1800
+#define REAR_SERVO_CENTER 1500
+#define REAR_SERVO_DEADZONE 50
 
 #define ROTATE_SERVO_PIN PA25
-#define ROTATE_SERVO_MIN 1000
-#define ROTATE_SERVO_MAX 2000
+#define ROTATE_SERVO_MIN 1200
+#define ROTATE_SERVO_MAX 1800
 #define ROTATE_SERVO_CENTER 1500
-#define ROTATE_SERVO_DEADZONE 100
+#define ROTATE_SERVO_DEADZONE 50
 
 #define CLAMP_SERVO_PIN PA26
 #define CLAMP_SERVO_MIN 1200
 #define CLAMP_SERVO_MAX 1800
 #define CLAMP_SERVO_CENTER 1500
-#define CLAMP_SERVO_DEADZONE 100
+#define CLAMP_SERVO_DEADZONE 50
 
 AmebaServo frontArmServo, rearArmServo, rotateServo, clampServo;
 
@@ -86,14 +86,13 @@ void setup() {
 void loop() {
 
     if(updated){
-      int ch1=1500, ch2=1500, ch3=1500, ch4=1500;
-      char charBuff[3];
-
       /* Parse V7RC data to servo timing (1000 to 2000)*/
       // CH1: front arm servo
       // CH2: rear arm servo
       // CH3: rotate servo
       // CH4: clamp servo
+      int ch1=FRONT_SERVO_CENTER, ch2=REAR_SERVO_CENTER, ch3=ROTATE_SERVO_CENTER, ch4=CLAMP_SERVO_CENTER;
+      char charBuff[3]; // for string to int function
 
       //Serial.println(rxString); // raw output
       if((rxString.substring(0,3).compareTo("SRV") == 0) || (rxString.substring(0,3).compareTo("SRT") == 0)){
@@ -104,13 +103,13 @@ void loop() {
       }
       else if(rxString.substring(0,3).compareTo("SS8") == 0){
         rxString.substring(3,5).toCharArray(charBuff,3);
-        ch1 = strtol(charBuff,0,16)*10;
+        ch1 = strtol(charBuff,false,16)*10;
         rxString.substring(5,7).toCharArray(charBuff,3);
-        ch2 = strtol(charBuff,0,16)*10;
+        ch2 = strtol(charBuff,false,16)*10;
         rxString.substring(7,9).toCharArray(charBuff,3);
-        ch3 = strtol(charBuff,0,16)*10;
+        ch3 = strtol(charBuff,false,16)*10;
         rxString.substring(9,11).toCharArray(charBuff,3);
-        ch4 = strtol(charBuff,0,16)*10;
+        ch4 = strtol(charBuff,false,16)*10;
       }
 
       /* Process servo data */
