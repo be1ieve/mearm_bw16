@@ -48,8 +48,8 @@ String rxString = "";
 
 void writeCB (BLECharacteristic* chr, uint8_t connID) {
     if (updated == false && chr->getDataLen() > 0) {
-        updated = true;
         rxString = chr->readString();
+        updated = true;
     }
 }
 
@@ -89,9 +89,13 @@ void loop() {
       int ch1=1500, ch2=1500, ch3=1500, ch4=1500;
       char charBuff[3];
 
-      /* Parse V7RC data to servo timing */
+      /* Parse V7RC data to servo timing (1000 to 2000)*/
+      // CH1: front arm servo
+      // CH2: rear arm servo
+      // CH3: rotate servo
+      // CH4: clamp servo
 
-      //Serial.println(rxString);
+      //Serial.println(rxString); // raw output
       if((rxString.substring(0,3).compareTo("SRV") == 0) || (rxString.substring(0,3).compareTo("SRT") == 0)){
         ch1 = rxString.substring(3,7).toInt();
         ch2 = rxString.substring(7,11).toInt();
@@ -110,7 +114,6 @@ void loop() {
       }
 
       /* Process servo data */
-
       if(ch1 < 1500 - FRONT_SERVO_DEADZONE)
         ch1 = map(ch1, 1000, 1500 - FRONT_SERVO_DEADZONE, FRONT_SERVO_MIN, FRONT_SERVO_CENTER);
       else if (ch1 > 1500 + FRONT_SERVO_DEADZONE)
@@ -146,6 +149,13 @@ void loop() {
       Serial.print(", CH4: ");
       Serial.println(ch4);
 
+      /* Output to servo */
+      
+      frontArmServo.writeMicroseconds(ch1);
+      rearArmServo.writeMicroseconds(ch2);
+      rotateServo.writeMicroseconds(ch3);
+      clampServo.writeMicroseconds(ch4);
+        
       updated = false; // clear flag for another update
     }
     delay(10); // slow down
